@@ -1,0 +1,48 @@
+name: github action demo pipeline
+
+on:
+  push:
+    branches:
+      main
+
+jobs:
+  extract-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Show python version
+        run: python --version 
+
+      - name: Set up python 
+        uses: actions/setup-python@v4 
+        with:
+          python-version: 3.10
+
+      - name: Install dependencies 
+        run: pip install -r requirements.txt
+
+      - name: Run extract.py
+        run: python extract.py 
+
+  transform-job:
+    runs-on: ubuntu-latest
+    needs: extract-job 
+    steps:
+      - name: Checkout code 
+        uses: actions/checkout@v2
+
+      - name: Run transform.py
+        run: python transform.py
+  
+  load-job:
+    runs-on: ubuntu-latest
+    needs: transform-job 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 
+
+      - name: Run load.py
+        run: python load.py
+      
